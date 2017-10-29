@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "axios": "^0.17.0",
+    "es6-promise": "^4.1.1",
     "vue": "^2.5.2"
   },
   "devDependencies": {

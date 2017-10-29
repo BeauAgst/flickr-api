@@ -72,6 +72,7 @@ input {
   padding: 0 40px;
   width: 100%;
   border: none;
+  min-height: 60px;
   line-height: 60px;
   font-size: 15px;
   box-shadow: 2px 3px 8px 0 rgba(42, 48, 55, 0.04),

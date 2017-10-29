@@ -205,6 +205,7 @@ img {
   right: 0;
   left: 0;
   margin: 0 auto;
+  width: 100%;
   max-width: 70%;
   transform: translateY(-50%);
   max-height: 100px;

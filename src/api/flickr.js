@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const YOUR_API_KEY = '533a21abda25662bfd72647b7a9ad941';
+const YOUR_API_KEY = '';
 
 const flickr = {
 
