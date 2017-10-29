@@ -54,7 +54,7 @@ export default {
       show: false,
     };
   },
-  
+
   /* Clean up the passed data */
   computed: {
     photoURL() {
@@ -79,7 +79,7 @@ export default {
   },
 
   methods: {
-    /* If a tag is clicked, scroll back to the 
+    /* If a tag is clicked, scroll back to the
       top of the page, and make a query based
       upon it */
     searchTag(tag) {
@@ -88,7 +88,7 @@ export default {
         left: 0,
         behavior: 'smooth',
       });
-      document.querySelector('.search input').setAttribute('value', tag);
+      window.eventHub.$emit('tag-query', tag);
       this.show = false;
       flickr.makeQuery(tag);
     },

@@ -18,6 +18,7 @@
 <script>
 import flickr from '../api/flickr';
 
+
 export default {
   name: 'search',
   data() {
@@ -29,6 +30,10 @@ export default {
   created() {
     /* Check for a previous query first */
     this.getLastQuery();
+
+    window.eventHub.$on('tag-query', (tag) => {
+      this.query = tag;
+    });
   },
 
   methods: {
