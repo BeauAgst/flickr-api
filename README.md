@@ -24,6 +24,11 @@ npm run build --report
 * Query photos from the Flickr API (Click/tap search or just hit enter)
 * Infinite scrolling
 
+### Images
+* If an image has no title it is set to "Untitled photo"
+* Clicking the image opens it in a new tab
+* Clicking the user opens their profile in a new tab
+
 ### Tags
 * Photos that have tags will be identified with a `tags` label in the corner
 * Clicking tags will open a list of tags associated with the picture
@@ -31,4 +36,5 @@ npm run build --report
 
 ### Local storage
 * When coming back to the page, your last query will be retrieved
+* Your previous search' photos will also be retrieved, to reduce initial data usage
 
