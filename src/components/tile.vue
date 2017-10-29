@@ -1,9 +1,20 @@
 <template>
   <div class="tile">
     <div class="inner">
+      <div 
+        class="tag-show"
+        v-if="show"
+      >
+        <span
+          v-for="tag in sortedTags"
+          :key="tag"
+          @click="searchTag(tag)"
+        > {{tag}} </span>
+      </div>
       <div
         class="tags"
         v-if="photo.tags"
+        v-on:click="show = !show"
       >
         <span>tags</span>
       </div>
@@ -33,9 +44,18 @@
 </template>
 
 <script>
+import flickr from '../api/flickr';
+
 export default {
   name: 'tile',
   props: ['photo'],
+  data() {
+    return {
+      show: false,
+    };
+  },
+  
+  /* Clean up the passed data */
   computed: {
     photoURL() {
       return `https://www.flickr.com/photos/${this.photo.owner}/${this.photo.id}`;
@@ -51,6 +71,26 @@ export default {
 
     getAuthor() {
       return `https://www.flickr.com/people/${this.photo.owner}`;
+    },
+
+    sortedTags() {
+      return this.photo.tags.split(' ');
+    },
+  },
+
+  methods: {
+    /* If a tag is clicked, scroll back to the 
+      top of the page, and make a query based
+      upon it */
+    searchTag(tag) {
+      window.scroll({
+        top: 0,
+        left: 0,
+        behavior: 'smooth',
+      });
+      document.querySelector('.search input').setAttribute('value', tag);
+      this.show = false;
+      flickr.makeQuery(tag);
     },
   },
 };
@@ -124,8 +164,8 @@ img {
 }
 
 .author {
-  display: block;
-  color: #000;
+  display: inline-block;
+  color: #409eff;
   padding-top: 5px;
   font-weight: bold;
   text-transform: uppercase;
@@ -136,7 +176,7 @@ img {
 }
 
 .author:hover {
-  color: #b56123;
+  color: #66b1ff;
 }
 
 .tags {
@@ -156,5 +196,32 @@ img {
 
 .tags:hover {
   background: #272727;
+}
+
+.tag-show {
+  position: absolute;
+  z-index: 2;
+  top: 40%;
+  right: 0;
+  left: 0;
+  margin: 0 auto;
+  max-width: 70%;
+  transform: translateY(-50%);
+  max-height: 100px;
+  overflow: auto;
+  padding: 8px 8px 4px;
+  margin-top: 10px;
+  background: #272727;
+  border-radius: 4px;
+  font-size: 12px;
+}
+
+.tag-show span {
+  display: inline-block;
+  cursor: pointer;
+  margin: 0 4px 4px 0;
+  padding: 3px 5px;
+  color: #2f2f2f;
+  background: #fff;
 }
 </style>

@@ -1,12 +1,12 @@
 <template>
   <div id="app" >
     <div class="container">
-      <div class="page-title">Flickr Tag Search</div>
+      <div class="page-title">Flickr Search</div>
     </div>
     <div class="container">
       <search/>
     </div>
-    <div class="container">
+    <div id="feed" class="container">
       <tile v-for="photo in this.photos" :photo="photo" :key="photo.id"/>
     </div>
   </div>
@@ -31,11 +31,39 @@ export default {
   },
 
   created() {
+    /* Infinite scroll */
+    const infiniteScroll = () => {
+      const scrollPos = document.documentElement.scrollTop || document.body.scrollTop;
+      const wHeight = window.innerHeight;
+      const feedHeight = document.getElementById('feed').clientHeight;
+      if (scrollPos + wHeight >= feedHeight) {
+        window.removeEventListener('scroll', infiniteScroll);
+        flickr.getMore();
+      }
+    };
+
+    /* Updated photo array based on new requests.
+      Returned data is added to localStorage. */
     window.eventHub.$on('new-request', (data) => {
       this.photos = data;
+      localStorage.setItem('lastFeed', JSON.stringify(this.photos));
     });
 
-    flickr.getRecent();
+    /* Same as above but for extra requests. Re-apply
+      Infinite-scroll once data is retrieved.  */
+    window.eventHub.$on('update-request', (data) => {
+      this.photos.push(...data);
+      localStorage.setItem('lastFeed', JSON.stringify(this.photos));
+      window.addEventListener('scroll', infiniteScroll);
+    });
+
+    /* Check for a previous query, and add infinite-scroll
+      listener. */
+    const lastQuery = localStorage.getItem('lastFeed');
+    if (lastQuery !== null) this.photos = JSON.parse(lastQuery);
+    else flickr.getRecent();
+
+    window.addEventListener('scroll', infiniteScroll);
   },
 };
 </script>
@@ -43,9 +71,9 @@ export default {
 <style>
 html,
 body {
+  position: relative;
   margin: 0;
   padding: 0;
-  height: 100%;
   font-size: 100%;
   font-family: 'Avenir', Helvetica, Arial, sans-serif;
   font-size: 16px;
@@ -60,7 +88,7 @@ body {
   padding-bottom: 100px;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  color: #505050;
+  color: #5e6d82;
 }
 
 .container {

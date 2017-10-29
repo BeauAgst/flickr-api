@@ -4,6 +4,13 @@ const YOUR_API_KEY = '';
 
 const flickr = {
 
+  /* Store most recent query data here,
+    in case user scrolls to bottom of page */
+  lastPage: 1,
+  lastMethod: 'flickr.photos.getRecent',
+  lastQuery: '',
+
+  /* Simple request, taking necessary params */
   request(page, method, query = '') {
     return new Promise((resolve, reject) => {
       axios.get(`https://api.flickr.com/services/rest/?method=${method}&format=json&api_key=${YOUR_API_KEY}&nojsoncallback=1&extras=owner_name,tags&page=${page}&per_page=40${query}`)
@@ -16,27 +23,38 @@ const flickr = {
     });
   },
 
-  makeQuery(string, page = 1) {
-    return new Promise((resolve) => {
-      const cleanString = string.split(' ').join('+');
-      const method = 'flickr.photos.search';
-      const query = `&text=${cleanString}`;
-      this.request(page, method, query)
-        .then((data) => {
-          window.eventHub.$emit('new-request', data);
-          resolve();
-        });
+  /* Making a query, and adding to storage.
+    We can retrieve this later if the user
+    were to come back. */
+  makeQuery(string) {
+    localStorage.setItem('lastQuery', string);
+    const cleanString = string.split(' ').join('+');
+    this.lastMethod = 'flickr.photos.search';
+    this.lastQuery = `&text=${cleanString}`;
+    this.lastPage = 1;
+    this.request(1, this.lastMethod, this.lastQuery)
+    .then((data) => {
+      window.eventHub.$emit('new-request', data);
     });
   },
 
-  getRecent(page = 1) {
-    return new Promise((resolve) => {
-      const method = 'flickr.photos.getRecent';
-      this.request(page, method)
-        .then((data) => {
-          window.eventHub.$emit('new-request', data);
-          resolve();
-        });
+  getRecent() {
+    this.lastMethod = 'flickr.photos.getRecent';
+    this.lastPage = 1;
+    this.request(1, this.lastMethod)
+    .then((data) => {
+      window.eventHub.$emit('new-request', data);
+    });
+  },
+
+  /* Creates a request based on the stored data
+    inside this object. Can be appended to content
+    pre-existing on the page. */
+  getMore() {
+    this.lastPage += 1;
+    this.request(this.lastPage, this.lastMethod, this.lastQuery)
+    .then((data) => {
+      window.eventHub.$emit('update-request', data);
     });
   },
 };

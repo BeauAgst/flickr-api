@@ -25,10 +25,26 @@ export default {
       query: '',
     };
   },
+
+  created() {
+    /* Check for a previous query first */
+    this.getLastQuery();
+  },
+
   methods: {
+    /* Prevent query being made if input
+      is empty */
     changeHandler() {
-      if (this.query === '') flickr.getRecent();
-      return flickr.makeQuery(this.query);
+      if (!this.query) return;
+      flickr.makeQuery(this.query);
+    },
+
+    /* Set current query to the one stored in
+      locaLStorage, if it exists */
+    getLastQuery() {
+      const query = localStorage.getItem('lastQuery');
+      this.query = query || '';
+      if (query !== null) flickr.makeQuery(query);
     },
   },
 };
@@ -74,7 +90,7 @@ button {
   border: none;
   line-height: 60px;
   color: #fff;
-  background: #006dac;
+  background: #409eff;
   box-shadow: 2px 3px 8px 0 rgba(42, 48, 55, 0.04),
               8px 13px 38px 0 rgba(42, 48, 55, 0.02);
   border: 1px solid #e6e6e6;
@@ -85,7 +101,7 @@ button {
 }
 
 button:hover {
-  background: #005180;
+  background: #66b1ff;
 }
 
 @media (min-width: 768px) {
